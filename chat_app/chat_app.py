@@ -1,7 +1,7 @@
 """Welcome to Reflex! This file outlines the steps to create a basic app."""
 
 import reflex as rx
-
+from chat_app.state import State
 from chat_app import style
 
 from rxconfig import config
@@ -24,7 +24,7 @@ def index() -> rx.Component:
     )
 def qa(question: str, answer: str) -> rx.Component:
     return rx.box(
-        rx.box(question, text_align="right"),
+        rx.box(question, text_align="left"),
         rx.box(answer, text_align="left"),
         margin_y="1em",
     )
@@ -65,6 +65,39 @@ def index() -> rx.Component:
         action_bar(),
     )
 
+def chat() -> rx.Component:
+    return rx.box(
+        rx.foreach(
+            State.chat_history,
+            lambda messages: qa(messages[0], messages[1]),
+        )
+    )
+
+
+...
+
+
+def action_bar() -> rx.Component:
+    return rx.hstack(
+        rx.input(
+            placeholder="Ask a question",
+            on_change=State.set_question,
+            style=style.input_style,
+        ),
+        rx.button(
+            "Ask",
+            on_click=State.answer,
+            style=style.button_style,
+        ),
+    )
+def index() -> rx.Component:
+    return rx.center(
+        rx.vstack(
+            chat(),
+            action_bar(),
+            align="center",
+        )
+    )
 
 # Add state and page to the app.
 app = rx.App()
